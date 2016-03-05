@@ -32,7 +32,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('eval_dir', '/tmp/fer2013_eval',
                            """Directory where to write event logs.""")
-tf.app.flags.DEFINE_string('eval_data', 'test',
+tf.app.flags.DEFINE_string('eval_data', 'test_batch.bin',
                            """Either 'test' or 'train_eval'.""")
 tf.app.flags.DEFINE_string('checkpoint_dir', '/tmp/fer2013_train',
                            """Directory where to read model checkpoints.""")
