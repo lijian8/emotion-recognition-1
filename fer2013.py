@@ -15,7 +15,6 @@ Summary of available functions:
  # Create a graph to run one step of training with respect to the loss.
  train_op = train(loss, global_step)
 """
-# pylint: disable=missing-docstring
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -29,7 +28,7 @@ import tarfile
 from six.moves import urllib
 import tensorflow as tf
 
-from tensorflow.models.image.fer2013 import fer2013_input
+import fer2013_input
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -58,9 +57,6 @@ INITIAL_LEARNING_RATE = 0.1       # Initial learning rate.
 # to differentiate the operations. Note that this prefix is removed from the
 # names of the summaries when visualizing a model.
 TOWER_NAME = 'tower'
-
-DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
-
 
 def _activation_summary(x):
   """Helper to create summaries for activations.
@@ -124,7 +120,7 @@ def distorted_inputs():
   """Construct distorted input for FER2013 training using the Reader ops.
 
   Returns:
-    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
+    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 1] size.
     labels: Labels. 1D tensor of [batch_size] size.
 
   Raises:
@@ -144,7 +140,7 @@ def inputs(eval_data):
     eval_data: bool, indicating if one should use the train or eval data set.
 
   Returns:
-    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
+    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 1] size.
     labels: Labels. 1D tensor of [batch_size] size.
 
   Raises:
@@ -152,7 +148,6 @@ def inputs(eval_data):
   """
   if not FLAGS.data_input_dir:
     raise ValueError('Please supply a data_input_dir')
-  # data_dir = os.path.join(FLAGS.data_dir, 'fer2013-batches-bin')
   data_input_dir = os.path.join(FLAGS.data_input_dir, 'fer2013-batches-bin')
   return fer2013_input.inputs(eval_data=eval_data, data_dir=data_input_dir,
                               batch_size=FLAGS.batch_input_size)
@@ -172,11 +167,13 @@ def inference(images):
   # If we only ran this model on a single GPU, we could simplify this function
   # by replacing all instances of tf.get_variable() with tf.Variable().
   #
+
+  # TODO: Add a conv0 -> pool0 on top of this which takes 32x32 images as input
+  # and outputs 24x24 feature maps. The purpose of this is to improve accuracy.
+
   # conv1
   with tf.variable_scope('conv1') as scope:
-    # kernel = _variable_with_weight_decay('weights', shape=[5, 5, 3, 64],
-                                         # stddev=1e-4, wd=0.0)
-
+    # [width, height, depth, filters]
     kernel = _variable_with_weight_decay('weights', shape=[5, 5, 1, 64],
                                          stddev=1e-4, wd=0.0)
 
@@ -349,23 +346,3 @@ def train(total_loss, global_step):
     train_op = tf.no_op(name='train')
 
   return train_op
-
-
-def maybe_download_and_extract():
-  """Download and extract the tarball from Alex's website."""
-  dest_directory = FLAGS.data_input_dir
-  if not os.path.exists(dest_directory):
-    os.makedirs(dest_directory)
-  filename = DATA_URL.split('/')[-1]
-  filepath = os.path.join(dest_directory, filename)
-  if not os.path.exists(filepath):
-    def _progress(count, block_size, total_size):
-      sys.stdout.write('\r>> Downloading %s %.1f%%' % (filename,
-          float(count * block_size) / float(total_size) * 100.0))
-      sys.stdout.flush()
-    filepath, _ = urllib.request.urlretrieve(DATA_URL, filepath,
-                                             reporthook=_progress)
-    print()
-    statinfo = os.stat(filepath)
-    print('Successfully downloaded', filename, statinfo.st_size, 'bytes.')
-    tarfile.open(filepath, 'r:gz').extractall(dest_directory)

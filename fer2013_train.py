@@ -1,22 +1,5 @@
-"""A binary to train FER2013 using a single GPU.
+"""A binary to train FER2013 using a single GPU."""
 
-Accuracy:
-fer2013_train.py achieves ~86% accuracy after 100K steps (256 epochs of
-data) as judged by fer2013_eval.py.
-
-Speed: With batch_size 128.
-
-System        | Step Time (sec/batch)  |     Accuracy
-------------------------------------------------------------------
-1 Tesla K20m  | 0.35-0.60              | ~86% at 60K steps  (5 hours)
-1 Tesla K40m  | 0.25-0.35              | ~86% at 100K steps (4 hours)
-
-Usage:
-Please see the tutorial and website for how to download the FER2013
-data set, compile the program and train the model.
-
-http://tensorflow.org/tutorials/deep_cnn/
-"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -26,10 +9,10 @@ import os.path
 import time
 
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import xrange
 import tensorflow as tf
 
-from tensorflow.models.image.fer2013 import fer2013
+import fer2013
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -109,7 +92,6 @@ def train():
 
 
 def main(argv=None):  # pylint: disable=unused-argument
-  # fer2013.maybe_download_and_extract()
   if tf.gfile.Exists(FLAGS.train_dir):
     tf.gfile.DeleteRecursively(FLAGS.train_dir)
   tf.gfile.MakeDirs(FLAGS.train_dir)

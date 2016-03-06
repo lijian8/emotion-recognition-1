@@ -9,9 +9,7 @@ import os
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-# Process images of this size. Note that this differs from the original FER2013
-# image size of 48 x 48. If one alters this number, then the entire model
-# architecture will change and any model would need to be retrained.
+# Process images of this size. Original FER2013 image size is 48 x 48.
 IMAGE_SIZE = 24
 
 # Global constants describing the FER2013 data set.
@@ -33,12 +31,12 @@ def read_fer2013(filename_queue):
 
   Returns:
     An object representing a single example, with the following fields:
-      height: number of rows in the result (32)
-      width: number of columns in the result (32)
-      depth: number of color channels in the result (3)
+      height: number of rows in the result (48)
+      width: number of columns in the result (348)
+      depth: number of color channels in the result (1)
       key: a scalar string Tensor describing the filename & record number
         for this example.
-      label: an int32 Tensor with the label in the range 0..9.
+      label: an int32 Tensor with the label in the range 0..7.
       uint8image: a [height, width, depth] uint8 Tensor with the image data
   """
 
@@ -46,14 +44,12 @@ def read_fer2013(filename_queue):
     pass
   result = FER2013Record()
 
-  # Dimensions of the images in the FER2013 dataset.
-  # See https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
-  # for description of input format.
   label_bytes = 1
-  result.height = 48 # 32
-  result.width = 48 # 32
-  result.depth = 1 #3
+  result.height = 48
+  result.width = 48
+  result.depth = 1 # 3 for RGB
   image_bytes = result.height * result.width * result.depth
+
   # Every record consists of a label followed by the image, with a
   # fixed number of bytes for each.
   record_bytes = label_bytes + image_bytes
@@ -86,14 +82,14 @@ def _generate_image_and_label_batch(image, label, min_queue_examples,
   """Construct a queued batch of images and labels.
 
   Args:
-    image: 3-D Tensor of [height, width, 3] of type.float32.
+    image: 3-D Tensor of [height, width, 1] of type.float32.
     label: 1-D Tensor of type.int32
     min_queue_examples: int32, minimum number of samples to retain
       in the queue that provides of batches of examples.
     batch_size: Number of images per batch.
 
   Returns:
-    images: Images. 4D tensor of [batch_size, height, width, 3] size.
+    images: Images. 4D tensor of [batch_size, height, width, 1] size.
     labels: Labels. 1D tensor of [batch_size] size.
   """
   # Create a queue that shuffles the examples, and then
@@ -123,8 +119,6 @@ def distorted_inputs(data_dir, batch_size):
     images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
     labels: Labels. 1D tensor of [batch_size] size.
   """
-  # filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i)
-               # for i in xrange(1, 6)]
 
   filenames = [os.path.join(data_dir, 'fer2013.bin')]
 
@@ -142,18 +136,8 @@ def distorted_inputs(data_dir, batch_size):
   height = IMAGE_SIZE
   width = IMAGE_SIZE
 
-  # Image processing for training the network. Note the many random
-  # distortions applied to the image.
-
-  # Randomly crop a [height, width] section of the image.
-  # distorted_image = tf.random_crop(reshaped_image, [height, width, 3]) # RGB
-  
-  # TODO: change this to bounding box!
-  # distorted_image = tf.random_crop(reshaped_image, [height, width, 1]) # Grayscale
+  # TODO: change this to 32 x 32 cropping.
   distorted_image = tf.image.crop_to_bounding_box(reshaped_image, 12, 12, 24, 24)
-
-  # Randomly flip the image horizontally.
-  # distorted_image = tf.image.random_flip_left_right(distorted_image)
 
   # Because these operations are not commutative, consider randomizing
   # randomize the order their operation.
@@ -190,9 +174,6 @@ def inputs(eval_data, data_dir, batch_size):
     labels: Labels. 1D tensor of [batch_size] size.
   """
   if not eval_data:
-    # filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i)
-                 # for i in xrange(1, 6)]
-
     filenames = [os.path.join(data_dir, 'fer2013.bin')]
     num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
   else:

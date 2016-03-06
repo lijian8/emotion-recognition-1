@@ -1,20 +1,5 @@
-"""Evaluation for FER2013.
+"""Evaluation for FER2013."""
 
-Accuracy:
-fer2013_train.py achieves 83.0% accuracy after 100K steps (256 epochs
-of data) as judged by fer2013_eval.py.
-
-Speed:
-On a single Tesla K40, fer2013_train.py processes a single batch of 128 images
-in 0.25-0.35 sec (i.e. 350 - 600 images /sec). The model reaches ~86%
-accuracy after 100K steps in 8 hours of training time.
-
-Usage:
-Please see the tutorial and website for how to download the FER2013
-data set, compile the program and train the model.
-
-http://tensorflow.org/tutorials/deep_cnn/
-"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -26,7 +11,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from tensorflow.models.image.fer2013 import fer2013
+import fer2013
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -38,12 +23,8 @@ tf.app.flags.DEFINE_string('checkpoint_dir', '/tmp/fer2013_train',
                            """Directory where to read model checkpoints.""")
 tf.app.flags.DEFINE_integer('eval_interval_secs', 60 * 5,
                             """How often to run the eval.""")
-# tf.app.flags.DEFINE_integer('num_examples', 10000,
-                            # """Number of examples to run.""")
-
 tf.app.flags.DEFINE_integer('num_examples', 3589,
                             """Number of examples to run.""")
-
 tf.app.flags.DEFINE_boolean('run_once', False,
                          """Whether to run eval only once.""")
 
@@ -136,8 +117,7 @@ def evaluate():
       time.sleep(FLAGS.eval_interval_secs)
 
 
-def main(argv=None):  # pylint: disable=unused-argument
-  # fer2013.maybe_download_and_extract()
+def main(argv=None):
   if tf.gfile.Exists(FLAGS.eval_dir):
     tf.gfile.DeleteRecursively(FLAGS.eval_dir)
   tf.gfile.MakeDirs(FLAGS.eval_dir)

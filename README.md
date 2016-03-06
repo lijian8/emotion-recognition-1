@@ -17,11 +17,16 @@ DATA SET:
 HOW TO RUN:
 -----------
 - Install `TensorFlow`: https://www.tensorflow.org/versions/r0.7/get_started/os_setup.html#pip-installation
-- Download `emotion-recognition` project folder inside `/Library/Python/2.7/site-packages/tensorflow/models/image/`
 - Run `python fer2013_train.py` (Takes ~20hrs on a quad core laptop!)
 - Run `python fer2013_eval.py`
 
+STATS DASHBOARD:
+----------------
+- Run `tensorboard --logdir "/tmp"`
+- Go to `http://0.0.0.0:6006/`
+- This displays `events`, `images`, `graphs` and `histograms` for the train and eval runs on the model.
+
 REFERENCES:
 -----------
-- https://www.tensorflow.org
-- https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
+- Code references and examples from https://www.tensorflow.org
+- Data Set from https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
