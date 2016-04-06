@@ -2,7 +2,7 @@ Facial Emotion Recognition using TensorFlow!
 
 DATA SET:
 ---------
-- Download Data Set: `fer2013.bin` and `test_batch.bin` from https://goo.gl/ffmy2h
+- Download Data Set: `fer2013.bin` (63M) and `test_batch.bin` (7.9M) from https://goo.gl/ffmy2h
 
   Image Properties: `Size of an image` - 48 x 48 pixels (2304 bytes), `Size of a label` - number in (0..6) (1 byte) (0=Angry, 1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral).
 

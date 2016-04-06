@@ -10,7 +10,7 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
 # Process images of this size. Original FER2013 image size is 48 x 48.
-IMAGE_SIZE = 24
+IMAGE_SIZE = 32
 
 # Global constants describing the FER2013 data set.
 NUM_CLASSES = 7 # (0=Angry, 1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral) #10
@@ -136,15 +136,17 @@ def distorted_inputs(data_dir, batch_size):
   height = IMAGE_SIZE
   width = IMAGE_SIZE
 
-  # TODO: change this to 32 x 32 cropping.
-  distorted_image = tf.image.crop_to_bounding_box(reshaped_image, 12, 12, 24, 24)
+  # 32 x 32 cropping.
+  # Resizes an image to a target width and height by either centrally cropping the image 
+  # or padding it evenly with zeros.
+
+  # distorted_image = tf.image.crop_to_bounding_box(reshaped_image, 12, 12, 24, 24)
+  distorted_image = tf.image.resize_image_with_crop_or_pad(reshaped_image, width, height)
 
   # Because these operations are not commutative, consider randomizing
   # randomize the order their operation.
-  distorted_image = tf.image.random_brightness(distorted_image,
-                                               max_delta=63)
-  distorted_image = tf.image.random_contrast(distorted_image,
-                                             lower=0.2, upper=1.8)
+  distorted_image = tf.image.random_brightness(distorted_image, max_delta=63)
+  distorted_image = tf.image.random_contrast(distorted_image, lower=0.2, upper=1.8)
 
   # Subtract off the mean and divide by the variance of the pixels.
   float_image = tf.image.per_image_whitening(distorted_image)
@@ -154,7 +156,7 @@ def distorted_inputs(data_dir, batch_size):
   min_queue_examples = int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN *
                            min_fraction_of_examples_in_queue)
   print ('Filling queue with %d FER2013 images before starting to train. '
-         'This will take a few minutes.' % min_queue_examples)
+         'This might take a few minutes.' % min_queue_examples)
 
   # Generate a batch of images and labels by building up a queue of examples.
   return _generate_image_and_label_batch(float_image, read_input.label,
