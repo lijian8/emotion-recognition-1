@@ -149,6 +149,7 @@ def inputs(eval_data):
   if not FLAGS.data_input_dir:
     raise ValueError('Please supply a data_input_dir')
   data_input_dir = os.path.join(FLAGS.data_input_dir, 'fer2013-batches-bin')
+  print("calling fer2014_input.inputs() ...")
   return fer2013_input.inputs(eval_data=eval_data, data_dir=data_input_dir,
                               batch_size=FLAGS.batch_input_size)
 

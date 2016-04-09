@@ -17,7 +17,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('eval_dir', '/tmp/fer2013_eval',
                            """Directory where to write event logs.""")
-tf.app.flags.DEFINE_string('eval_data', 'test_batch.bin',
+tf.app.flags.DEFINE_string('eval_data', 'test',
                            """Either 'test' or 'train_eval'.""")
 tf.app.flags.DEFINE_string('checkpoint_dir', '/tmp/fer2013_train',
                            """Directory where to read model checkpoints.""")
@@ -30,6 +30,7 @@ tf.app.flags.DEFINE_boolean('run_once', True,
 
 
 def eval_once(saver, summary_writer, logits, labels, top_k_op, summary_op):
+  print("Called eval_once ...")
   """Run Eval once.
 
   Args:
@@ -64,11 +65,17 @@ def eval_once(saver, summary_writer, logits, labels, top_k_op, summary_op):
       total_sample_count = num_iter * FLAGS.batch_input_size
       step = 0
       time.sleep(1)
+
+      print("step = %d, num_iter = %d  " % (step, num_iter))
+
       while step < num_iter and not coord.should_stop():
+        print("Inside while ...")
         result1, result2  = sess.run([logits, labels])
         #label = sess.run(labels)
         print('Step:', step, 'result',result1, 'Label:', result2)
         step += 1
+
+      print("Exited while! Next...")
 
       # Compute precision @ 1.
       precision = true_count / step

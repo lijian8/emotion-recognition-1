@@ -17,7 +17,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('eval_dir', '/tmp/fer2013_eval',
                            """Directory where to write event logs.""")
-tf.app.flags.DEFINE_string('eval_data', 'test_batch.bin',
+tf.app.flags.DEFINE_string('eval_data', 'test',
                            """Either 'test' or 'train_eval'.""")
 tf.app.flags.DEFINE_string('checkpoint_dir', '/tmp/fer2013_train',
                            """Directory where to read model checkpoints.""")
@@ -88,6 +88,8 @@ def evaluate():
   with tf.Graph().as_default():
     # Get images and labels for FER2013.
     eval_data = FLAGS.eval_data == 'test'
+    print(eval_data)
+    print("evaluating model...")
     images, labels = fer2013.inputs(eval_data=eval_data)
 
     # Build a Graph that computes the logits predictions from the
