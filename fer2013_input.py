@@ -182,8 +182,7 @@ def inputs(eval_data, data_dir, batch_size):
     filenames = [os.path.join(data_dir, 'test_batch.bin')]
     num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 
-  print("FILENAME:")
-  print(filenames)
+  print("Reading file:",filenames)
 
   for f in filenames:
     if not tf.gfile.Exists(f):

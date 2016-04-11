@@ -30,7 +30,7 @@ tf.app.flags.DEFINE_boolean('run_once', True,
 
 
 def eval_once(saver, summary_writer, logits, labels, top_k_op, summary_op):
-  print("Called eval_once ...")
+  # print("Called eval_once ...")
   """Run Eval once.
 
   Args:
@@ -44,6 +44,7 @@ def eval_once(saver, summary_writer, logits, labels, top_k_op, summary_op):
     if ckpt and ckpt.model_checkpoint_path:
       # Restores from checkpoint
       saver.restore(sess, ckpt.model_checkpoint_path)
+      print("Checkpoint file path:", ckpt.model_checkpoint_path)
       # Assuming model_checkpoint_path looks something like:
       #   /my-favorite-path/fer2013_train/model.ckpt-0,
       # extract global_step from it.
@@ -66,21 +67,27 @@ def eval_once(saver, summary_writer, logits, labels, top_k_op, summary_op):
       step = 0
       time.sleep(1)
 
-      print("step = %d, num_iter = %d  " % (step, num_iter))
+      # print("step = %d, num_iter = %d  " % (step, num_iter))
+
+      emotion_dict = {0: 'Angry', 1: 'Fear', 2: 'Happy', 3: 'Sad'}
 
       while step < num_iter and not coord.should_stop():
-        print("Inside while ...")
+        # print("Inside while ...")
         result1, result2  = sess.run([logits, labels])
         #label = sess.run(labels)
-        print('Step:', step, 'result',result1, 'Label:', result2)
+        # print('Step:', step, 'result',result1, 'Label:', result2)
+        print("-----------------------------------------------------")
+        print('LABEL FOR INPUT IMAGE:', result2[0], '->', emotion_dict[result2[0]])
+        print("-----------------------------------------------------")
         step += 1
+        break
 
-      print("Exited while! Next...")
+      # print("Exited while! Next...")
 
       # Compute precision @ 1.
       precision = true_count / step
-      print('Summary -- Step:', step, 'Accurcy:',true_count * 100.0 / step * 1.0, )
-      print('%s: total:%d true:%d precision @ 1 = %.3f' % (datetime.now(), total_sample_count, true_count, precision))
+      # print('Summary -- Step:', step, 'Accurcy:',true_count * 100.0 / step * 1.0, )
+      # print('%s: total:%d true:%d precision @ 1 = %.3f' % (datetime.now(), total_sample_count, true_count, precision))
 
     except Exception as e:  # pylint: disable=broad-except
       coord.request_stop(e)

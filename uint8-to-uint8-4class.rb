@@ -3,42 +3,37 @@
 
 require 'CSV'
 
-class Integer
-  def to_bin(width)
-    '%0*b' % [width, self]
-  end
-end
-
-DATA_SET_UINT8 = "fer2013.csv"
-# DATA_SET_BIN   = "fer2013.bin"
-DATA_SET_BIN   = "test_batch.bin" # Test data
-
+CSV_IN    = "fer2013.csv"
+CSV_OUT   = "fer2013_4class.csv"
+# DATA_SET_BIN   = "test_batch.bin" # Test data
 
 puts "Reading csv ..."
 
-File.open(DATA_SET_BIN, 'wb') do |output|
+CSV.open(CSV_OUT, 'wb') do |output|
   ctr = 1
 
-  CSV.foreach(DATA_SET_UINT8, headers: true) do |row|
+  output << ["emotion", "pixels", "Usage"]
+
+  CSV.foreach(CSV_IN, headers: true) do |row|
     emotion = row["emotion"]
     pixels  = row["pixels"]
     usage   = row["Usage"]
 
 
     # if usage == 'Training'
-    if usage == 'PublicTest' # Test data
+    #if usage == 'PublicTest' # Test data
       actual_emotion = emotion
 
-      if emotion == '0' || emotion == '1' # angry & disgust
+      if emotion == '0' || emotion == '1'
         emotion = '0' # angry
 
       elsif emotion == '2'
         emotion = '1' # fear
 
-      elsif emotion == '3' || emotion == '5' # happy & surprised
+      elsif emotion == '3' || emotion == '5'
         emotion = '2' # happy
 
-      elsif emotion == '4' || emotion == '6' # sad & neutral
+      elsif emotion == '4' || emotion == '6'
         emotion = '3' # sad
 
       else
@@ -46,18 +41,17 @@ File.open(DATA_SET_BIN, 'wb') do |output|
         break
       end
 
-      arr =  [emotion.to_i.to_bin(8)] + pixels.split(' ').map { |i| i.to_i.to_bin(8) }
+      puts "#{ctr} : #{actual_emotion} -> #{emotion} | #{pixels[0..10]} ... | #{usage}"
 
-      puts "#{ctr} : #{actual_emotion} -> #{emotion} | #{pixels[0..10]} ... | #{usage} | bytes=#{arr.count}"
-      output.write [arr.join].pack("B*")
-
+      output << [emotion, pixels, usage]
       ctr += 1
-    else
-      next
-    end
 
-  end
-end
+    #else
+    #  next
+    #end
+
+  end # CSV.foreach
+end # CSV.open
 
 puts "Done!"
 

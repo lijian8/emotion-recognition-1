@@ -6,8 +6,9 @@ from PIL import Image
 #image parameters
 size = 48,48
 mode = 'RGB'
+file = 'private-test-150.csv'
 
-with open('fer2013.csv','r') as csvin:
+with open(file,'r') as csvin:
     traindata=csv.reader(csvin, delimiter=',', quotechar='"')
     rowcount=0
     for row in traindata:
@@ -24,6 +25,6 @@ with open('fer2013.csv','r') as csvin:
                 if x >= 48:
                     x=0
                     y+=1
-            imgfile='img\\'+str(row[0])+'\\'+str(rowcount)+'.png'
+            imgfile='img-'+str(rowcount)+'-'+str(row[0])+'.png'
             img.save(imgfile,'png')
         rowcount+=1
